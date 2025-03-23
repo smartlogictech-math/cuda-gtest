@@ -7,12 +7,12 @@
  */
 
 #include "vadd.h"
+#include "testsuite_vadd.h"
 
-#include <gtest/gtest.h>
 #include <iostream>
 #include "common.h"
 
-TEST(vadd, length_1024)
+TEST_F(VaddTestsuite, length_1024)
 {
     const uint32_t N = 1024;
     float *h_A, *h_B, *h_C;
@@ -37,9 +37,19 @@ TEST(vadd, length_1024)
 
     int threadsPerBlock = 128;
     int blocksPerGrid = (N + threadsPerBlock - 1) / threadsPerBlock;
+
+    cudaEvent_t eStart, eEnd;
+    cudaEventCreate(&eStart);
+    cudaEventCreate(&eEnd);
+    cudaEventRecord(eStart);
+
     vectorAdd<<<blocksPerGrid, threadsPerBlock>>>(d_A, d_B, d_C, N);
 
-    cudaDeviceSynchronize();
+    cudaEventRecord(eEnd);
+    cudaEventSynchronize(eEnd);
+    float time;
+    cudaEventElapsedTime(&time, eStart, eEnd);
+    std::cout << "Elapesd time: " << time << "ms" << std::endl;
 
     CHECK(cudaMemcpy(h_C, d_C, N * sizeof(float), cudaMemcpyDeviceToHost));
 
@@ -60,6 +70,8 @@ TEST(vadd, length_1024)
         std::cout << "Vector addition successful!" << std::endl;
     }
 
+    CHECK(cudaEventDestroy(eStart));
+    CHECK(cudaEventDestroy(eEnd));
     CHECK(cudaFree(d_A));
     CHECK(cudaFree(d_B));
     CHECK(cudaFree(d_C));

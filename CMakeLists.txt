@@ -11,9 +11,15 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Debug_test")
     set(BUILD_DEBUG_TESTS ON)
 endif()
 
+set(SRC_FILE_EXTENSIONS "*.c" "*.cpp" "*.cc" "*.cu" "*.sc")
+
 set(SRC_DIR ${CMAKE_CURRENT_LIST_DIR}/src)
 
-file(GLOB_RECURSE SRC_FILES "${SRC_DIR}/*.c" "${SRC_DIR}/*.cpp" "${SRC_DIR}/*.cu" "${SRC_DIR}/*.sc")
+set(SRC_FILES)
+foreach(ext IN LISTS SRC_FILE_EXTENSIONS)
+    file(GLOB_RECURSE tmp_files "${SRC_DIR}/${ext}")
+    list(APPEND SRC_FILES ${tmp_files})
+endforeach()
 message(STATUS "SRC_FILES: ${SRC_FILES}")
 
 include_directories(${CMAKE_CURRENT_LIST_DIR}/include/add)
@@ -32,24 +38,32 @@ endif()
 
 # Debug
 if(BUILD_DEBUG_TESTS)
-    set(GTEST_DIR /home/zhe.zhang/Public/lib/googletest)
+    set(GTEST_DIR /usr/local)
     set(TEST_DIR ${CMAKE_CURRENT_LIST_DIR}/tests)
 
-    file(GLOB_RECURSE TEST_FILES "${TEST_DIR}/*.c" "${TEST_DIR}/*.cpp" "${TEST_DIR}/*.cu" "${TEST_DIR}/*.sc")
+    set(TEST_FILES)
+    foreach(ext IN LISTS SRC_FILE_EXTENSIONS)
+        file(GLOB_RECURSE tmp_files "${TEST_DIR}/${ext}")
+        list(APPEND TEST_FILES ${tmp_files})
+    endforeach()
     message(STATUS "TEST_FILES: ${TEST_FILES}")
     
     include_directories(${GTEST_DIR}/include)
-
-    link_directories(${GTEST_DIR}/lib)
+    include_directories(${TEST_DIR}/inc)
 
     add_executable(test_elf ${SRC_FILES} ${TEST_FILES})
+
+    link_directories(${GTEST_DIR}/lib)
     target_link_libraries(test_elf pthread libgtest.a)
+    
     set_target_properties(test_elf PROPERTIES OUTPUT_NAME "test_${PROJECT_NAME}.elf")
+    
     target_compile_options(test_elf PRIVATE
         -O2
         -g
         -Wall
     )
     set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -G -g")
+
     message(STATUS "Building tests with src and test files.")
 endif()
