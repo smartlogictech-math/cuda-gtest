@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22.1)
-project(empty_project LANGUAGES C CXX CUDA)
+project(vadd LANGUAGES C CXX CUDA)
 
 option(BUILD_LIB "Build library only" OFF)
 option(BUILD_DEBUG_TESTS "Build debug tests" OFF)
@@ -22,8 +22,9 @@ foreach(ext IN LISTS SRC_FILE_EXTENSIONS)
 endforeach()
 message(STATUS "SRC_FILES: ${SRC_FILES}")
 
-include_directories(${CMAKE_CURRENT_LIST_DIR}/include/add)
-include_directories(${CMAKE_CURRENT_LIST_DIR}/include/common)
+include_directories(${CMAKE_CURRENT_LIST_DIR}/include)
+include_directories(/usr/local/cuda/include)
+# include_directories(${CMAKE_CURRENT_LIST_DIR}/include/common)
 
 # build library
 if(BUILD_LIB)
@@ -49,7 +50,7 @@ if(BUILD_DEBUG_TESTS)
     message(STATUS "TEST_FILES: ${TEST_FILES}")
     
     include_directories(${GTEST_DIR}/include)
-    include_directories(${TEST_DIR}/inc)
+    include_directories(${TEST_DIR}/include)
 
     add_executable(test_elf ${SRC_FILES} ${TEST_FILES})
 

@@ -1,0 +1,11 @@
+/**
+ * @file vadd_kernel.h
+ * @author zhe.zhang
+ * @date 2025-03-23 17:32:24
+ * @brief 
+ * @attention 
+ */
+#pragma once
+
+__global__ void vadd_kernel(const float* a, const float* b, float* c, int n);
+void launch_vadd(const float *d_a, const float *d_b, float *d_c, int n, cudaStream_t stream);
