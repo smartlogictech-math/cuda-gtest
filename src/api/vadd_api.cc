@@ -1,5 +1,5 @@
 /**
- * @file vadd_api.c
+ * @file vadd_api.cc
  * @author zhe.zhang
  * @date 2025-03-23 17:34:31
  * @brief 
@@ -11,17 +11,17 @@
 
 #include <cstdio>
 
-static bool check_paras(const float* const d_a, const float* const d_b, const float* const d_c, const int n){
-   if((nullptr == d_a) || (nullptr == d_b) || (nullptr == d_c) || (0 >= n)){
-      fprintf(stderr, "%s(%u): Invalid arguments: d_a=%p, d_b=%p, d_c=%p, n=%d\n", __FUNCTION__, __LINE__, d_a, d_b, d_c, n);
+static bool checkParas(const float* const dA, const float* const dB, const float* const dC, const int n){
+   if((nullptr == dA) || (nullptr == dB) || (nullptr == dC) || (0 >= n)){
+      fprintf(stderr, "%s(%u): Invalid arguments: dA=%p, dB=%p, dC=%p, n=%d\n", __FUNCTION__, __LINE__, dA, dB, dC, n);
       fflush(stderr);
       return false;
    }
 
    cudaPointerAttributes attr_a, attr_b, attr_c;
-   cudaPointerGetAttributes(&attr_a, d_a);
-   cudaPointerGetAttributes(&attr_b, d_b);
-   cudaPointerGetAttributes(&attr_c, d_c);
+   cudaPointerGetAttributes(&attr_a, dA);
+   cudaPointerGetAttributes(&attr_b, dB);
+   cudaPointerGetAttributes(&attr_c, dC);
    if(!((cudaMemoryTypeDevice == attr_a.type) && (cudaMemoryTypeDevice == attr_b.type) && (cudaMemoryTypeDevice == attr_c.type))){
       fprintf(stderr, "%s(%u): Invalid memory type: attr_a.type=%d, attr_b.type=%d, attr_c.type=%d\n",
               __FUNCTION__, __LINE__, attr_a.type, attr_b.type, attr_c.type);
@@ -32,13 +32,13 @@ static bool check_paras(const float* const d_a, const float* const d_b, const fl
    return true;
 }
 
-int vadd(const float* d_a, const float* d_b, float* d_c, int n, cudaStream_t stream) {
+int vadd(const float* dA, const float* dB, float* dC, int n, cudaStream_t stream) {
    /// If considering performance overhead, comment out the parameter checking function
-   if(!check_paras(d_a, d_b, d_c, n)){
+   if(!checkParas(dA, dB, dC, n)){
       return -1;
    }
  
-   launch_vadd(d_a, d_b, d_c, n, stream);
+   launchVadd(dA, dB, dC, n, stream);
 
    return 0;
 }

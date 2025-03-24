@@ -12,82 +12,82 @@
 
 TEST(VaddKernelTest, BasicAddition) {
   const int n = 3;
-  float h_a[3] = {1.0f, 2.0f, 3.0f};
-  float h_b[3] = {4.0f, 5.0f, 6.0f};
-  float h_c[3] = {0};
+  float hA[3] = {1.0f, 2.0f, 3.0f};
+  float hB[3] = {4.0f, 5.0f, 6.0f};
+  float hC[3] = {0};
 
-  float *d_a, *d_b, *d_c;
+  float *dA, *dB, *dC;
   cudaError_t err;
 
-  err = cudaMalloc(&d_a, n * sizeof(float));
+  err = cudaMalloc(&dA, n * sizeof(float));
   ASSERT_EQ(err, cudaSuccess);
-  err = cudaMalloc(&d_b, n * sizeof(float));
+  err = cudaMalloc(&dB, n * sizeof(float));
   ASSERT_EQ(err, cudaSuccess);
-  err = cudaMalloc(&d_c, n * sizeof(float));
+  err = cudaMalloc(&dC, n * sizeof(float));
   ASSERT_EQ(err, cudaSuccess);
 
   cudaStream_t stream;
   cudaStreamCreate(&stream);
 
-  err = cudaMemcpyAsync(d_a, h_a, n * sizeof(float), cudaMemcpyHostToDevice, stream);
+  err = cudaMemcpyAsync(dA, hA, n * sizeof(float), cudaMemcpyHostToDevice, stream);
   ASSERT_EQ(err, cudaSuccess);
-  err = cudaMemcpyAsync(d_b, h_b, n * sizeof(float), cudaMemcpyHostToDevice, stream);
+  err = cudaMemcpyAsync(dB, hB, n * sizeof(float), cudaMemcpyHostToDevice, stream);
   ASSERT_EQ(err, cudaSuccess);
 
-  launch_vadd(d_a, d_b, d_c, n, 0);
+  launchVadd(dA, dB, dC, n, 0);
 
-  err = cudaMemcpyAsync(h_c, d_c, n * sizeof(float), cudaMemcpyDeviceToHost, stream);
+  err = cudaMemcpyAsync(hC, dC, n * sizeof(float), cudaMemcpyDeviceToHost, stream);
   ASSERT_EQ(err, cudaSuccess);
 
   cudaStreamSynchronize(stream);
   cudaStreamDestroy(stream);
 
-  EXPECT_FLOAT_EQ(h_c[0], 5.0f);
-  EXPECT_FLOAT_EQ(h_c[1], 7.0f);
-  EXPECT_FLOAT_EQ(h_c[2], 9.0f);
+  EXPECT_FLOAT_EQ(hC[0], 5.0f);
+  EXPECT_FLOAT_EQ(hC[1], 7.0f);
+  EXPECT_FLOAT_EQ(hC[2], 9.0f);
 
-  cudaFree(d_a);
-  cudaFree(d_b);
-  cudaFree(d_c);
+  cudaFree(dA);
+  cudaFree(dB);
+  cudaFree(dC);
 }
 
 TEST(VaddKernelTest, LargeScaleAddition) {
   const int n = 1 << 20;
-  std::vector<float> h_a(n, 1.0f);
-  std::vector<float> h_b(n, 2.0f);
-  std::vector<float> h_c(n, 0.0f);
+  std::vector<float> hA(n, 1.0f);
+  std::vector<float> hB(n, 2.0f);
+  std::vector<float> hC(n, 0.0f);
 
-  float *d_a, *d_b, *d_c;
+  float *dA, *dB, *dC;
   cudaError_t err;
 
-  err = cudaMalloc(&d_a, n * sizeof(float));
+  err = cudaMalloc(&dA, n * sizeof(float));
   ASSERT_EQ(err, cudaSuccess);
-  err = cudaMalloc(&d_b, n * sizeof(float));
+  err = cudaMalloc(&dB, n * sizeof(float));
   ASSERT_EQ(err, cudaSuccess);
-  err = cudaMalloc(&d_c, n * sizeof(float));
+  err = cudaMalloc(&dC, n * sizeof(float));
   ASSERT_EQ(err, cudaSuccess);
 
   cudaStream_t stream;
   cudaStreamCreate(&stream);
 
-  err = cudaMemcpyAsync(d_a, h_a.data(), n * sizeof(float), cudaMemcpyHostToDevice, stream);
+  err = cudaMemcpyAsync(dA, hA.data(), n * sizeof(float), cudaMemcpyHostToDevice, stream);
   ASSERT_EQ(err, cudaSuccess);
-  err = cudaMemcpyAsync(d_b, h_b.data(), n * sizeof(float), cudaMemcpyHostToDevice, stream);
+  err = cudaMemcpyAsync(dB, hB.data(), n * sizeof(float), cudaMemcpyHostToDevice, stream);
   ASSERT_EQ(err, cudaSuccess);
 
-  launch_vadd(d_a, d_b, d_c, n, stream);
+  launchVadd(dA, dB, dC, n, stream);
 
-  err = cudaMemcpyAsync(h_c.data(), d_c, n * sizeof(float), cudaMemcpyDeviceToHost, stream);
+  err = cudaMemcpyAsync(hC.data(), dC, n * sizeof(float), cudaMemcpyDeviceToHost, stream);
   ASSERT_EQ(err, cudaSuccess);
 
   cudaStreamSynchronize(stream);
   cudaStreamDestroy(stream);
 
   for (int i = 0; i < 10; ++i) {
-    EXPECT_NEAR(h_c[i], 3.0f, 1e-5);
+    EXPECT_NEAR(hC[i], 3.0f, 1e-5);
   }
 
-  cudaFree(d_a);
-  cudaFree(d_b);
-  cudaFree(d_c);
+  cudaFree(dA);
+  cudaFree(dB);
+  cudaFree(dC);
 }

@@ -45,6 +45,7 @@ add_library(${project_lib_name}
     $<TARGET_OBJECTS:kernel>
 )
 target_include_directories(${project_lib_name}
+  PRIVATE /usr/local/cuda/include
   PUBLIC ${CMAKE_SOURCE_DIR}/include
   PRIVATE ${CMAKE_SOURCE_DIR}/include/internal/hal
   PRIVATE ${CMAKE_SOURCE_DIR}/include/internal/kernel

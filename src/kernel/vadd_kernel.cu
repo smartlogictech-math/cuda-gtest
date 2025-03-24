@@ -15,8 +15,8 @@ __global__ void vadd_kernel(const float* a, const float* b, float* c, int n) {
     }
 }
 
-void launch_vadd(const float* d_a, const float* d_b, float* d_c, int n, cudaStream_t stream) {
+void launchVadd(const float* dA, const float* dB, float* dC, int n, cudaStream_t stream) {
     dim3 block(256);
     dim3 grid((n + block.x - 1) / block.x);
-    vadd_kernel<<<grid, block, 0, stream>>>(d_a, d_b, d_c, n);
+    vadd_kernel<<<grid, block, 0, stream>>>(dA, dB, dC, n);
 }

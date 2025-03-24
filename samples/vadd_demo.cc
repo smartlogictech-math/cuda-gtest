@@ -15,36 +15,36 @@
 int main()
 {
   const int N = 1024;
-  std::vector<float> h_a(N, 1.0f);
-  std::vector<float> h_b(N, 2.0f);
-  std::vector<float> h_c(N, 0.0f);
+  std::vector<float> hA(N, 1.0f);
+  std::vector<float> hB(N, 2.0f);
+  std::vector<float> hC(N, 0.0f);
 
-  float *d_a, *d_b, *d_c;
-  cudaMalloc(&d_a, N * sizeof(float));
-  cudaMalloc(&d_b, N * sizeof(float));
-  cudaMalloc(&d_c, N * sizeof(float));
+  float *dA, *dB, *dC;
+  cudaMalloc(&dA, N * sizeof(float));
+  cudaMalloc(&dB, N * sizeof(float));
+  cudaMalloc(&dC, N * sizeof(float));
 
   cudaStream_t stream;
   cudaStreamCreate(&stream);
 
-  cudaMemcpyAsync(d_a, h_a.data(), N * sizeof(float), cudaMemcpyHostToDevice, stream);
-  cudaMemcpyAsync(d_b, h_b.data(), N * sizeof(float), cudaMemcpyHostToDevice, stream);
+  cudaMemcpyAsync(dA, hA.data(), N * sizeof(float), cudaMemcpyHostToDevice, stream);
+  cudaMemcpyAsync(dB, hB.data(), N * sizeof(float), cudaMemcpyHostToDevice, stream);
 
-  int ret = vadd(d_a, d_b, d_c, N, stream);
+  int ret = vadd(dA, dB, dC, N, stream);
   if (0 != ret)
   {
     printf("Error: vadd return %d\n", ret);
   }
   else
   {
-    cudaMemcpyAsync(h_c.data(), d_c, N * sizeof(float), cudaMemcpyDeviceToHost, stream);
+    cudaMemcpyAsync(hC.data(), dC, N * sizeof(float), cudaMemcpyDeviceToHost, stream);
     cudaStreamSynchronize(stream);
     printf("Info: vadd completed\n");
   }
 
   cudaStreamDestroy(stream);
-  cudaFree(d_a);
-  cudaFree(d_b);
-  cudaFree(d_c);
+  cudaFree(dA);
+  cudaFree(dB);
+  cudaFree(dC);
   return 0;
 }
