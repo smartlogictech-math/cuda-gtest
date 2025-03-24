@@ -1,14 +1,11 @@
-make clean
+find . -mindepth 1 ! -name "build.sh" -exec rm -rf {} +
 
-if [ -d "CMakeFiles" ]; then
-    rm -rf CMakeFiles
-    rm ./cmake_install.cmake
-    rm ./CMakeCache.txt
-    rm Makefile
-fi
-
-# Default:lib
 # cmake ..
-cmake -DCMAKE_BUILD_TYPE=Debug_test ..
+cmake -DCMAKE_BUILD_TYPE=Release ..
 
-make
+make -j8
+
+# ctest --output-on-failure
+
+# ./tests/vadd_tests
+# ./samples/vadd_demo
