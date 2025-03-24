@@ -19,3 +19,8 @@ if(BUILD_TESTS)
   enable_testing()
   add_subdirectory(tests)
 endif()
+
+option(BUILD_SAMPLES "Build samples" ON)
+if(BUILD_SAMPLES)
+  add_subdirectory(samples)
+endif()
