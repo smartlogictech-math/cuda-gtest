@@ -1,5 +1,5 @@
 /**
- * @file TEST_vadd_kernel.cu
+ * @file TEST_vadd_kernel.cc
  * @author zhe.zhang
  * @date 2025-03-23 17:48:17
  * @brief 

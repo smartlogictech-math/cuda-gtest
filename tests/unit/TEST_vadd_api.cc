@@ -1,5 +1,5 @@
 /**
- * @file TEST_vadd_api.cu
+ * @file TEST_vadd_api.cc
  * @author zhe.zhang
  * @date 2025-03-23 21:15:16
  * @brief 
@@ -9,8 +9,6 @@
 #include "vadd_api.h"
 
 #include "fixtures/vadd_api_fixture.h"
-
-#include <gtest/gtest.h>
 
 TEST_F(VaddAPITest, SmallScaleTest) {
     const int n = 5;
