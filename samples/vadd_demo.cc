@@ -1,5 +1,5 @@
 /**
- * @file sample_vector_add.c
+ * @file vadd_demo.cc
  * @author zhe.zhang
  * @date 2025-03-24 11:29:58
  * @brief

@@ -8,5 +8,8 @@ message(STATUS "DEMO_SRC_FILES: ${DEMO_SRC_FILES}")
 foreach(SRC_FILE IN LISTS DEMO_SRC_FILES)
     get_filename_component(EXE_NAME ${SRC_FILE} NAME_WE)
     add_executable(${EXE_NAME} ${SRC_FILE})
+    target_include_directories(${EXE_NAME}
+        PRIVATE /usr/local/cuda/include
+    )
     target_link_libraries(${EXE_NAME} PRIVATE ${project_lib_name})
 endforeach()
