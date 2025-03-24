@@ -7,4 +7,16 @@
  */
 #pragma once
 
-int vadd(const float* a, const float* b, float* c, int n, cudaStream_t stream);
+/**
+ * @brief vector add, c=a+b
+ * 
+ * @param d_a address of a in device memory
+ * @param d_b address of b in device memory
+ * @param d_c address of c in device memory
+ * @param n length of vector
+ * @param stream 
+ * @return int 
+ * @retval 0: success
+ * @retval -1: failure
+ */
+int vadd(const float* d_a, const float* d_b, float* d_c, int n, cudaStream_t stream);
