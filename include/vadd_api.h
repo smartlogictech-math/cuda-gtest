@@ -7,6 +7,8 @@
  */
 #pragma once
 
+#include <cuda_runtime.h>
+
 /**
  * @brief vector add, c=a+b
  * 
