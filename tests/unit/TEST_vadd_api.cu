@@ -26,7 +26,8 @@ TEST_F(VaddAPITest, SmallScaleTest) {
     cudaMemcpyAsync(d_a, h_a, n * sizeof(float), cudaMemcpyHostToDevice, stream);
     cudaMemcpyAsync(d_b, h_b, n * sizeof(float), cudaMemcpyHostToDevice, stream);
 
-    vadd(d_a, d_b, d_c, n, stream);
+    int ret = vadd(d_a, d_b, d_c, n, stream);
+    ASSERT_EQ(0, ret);
     cudaMemcpyAsync(h_c, d_c, n * sizeof(float), cudaMemcpyDeviceToHost, stream);
     cudaStreamSynchronize(stream);
 
@@ -55,7 +56,8 @@ TEST_F(VaddAPITest, LargeScaleTest) {
     cudaMemcpyAsync(d_a, h_a.data(), n * sizeof(float), cudaMemcpyHostToDevice, stream);
     cudaMemcpyAsync(d_b, h_b.data(), n * sizeof(float), cudaMemcpyHostToDevice, stream);
 
-    vadd(d_a, d_b, d_c, n, stream);
+    int ret = vadd(d_a, d_b, d_c, n, stream);
+    ASSERT_EQ(0, ret);
     cudaMemcpyAsync(h_c.data(), d_c, n * sizeof(float), cudaMemcpyDeviceToHost, stream);
     cudaStreamSynchronize(stream);
 
@@ -76,5 +78,15 @@ TEST_F(VaddAPITest, InvalidInput) {
     EXPECT_EQ(vadd(nullptr, nullptr, nullptr, 1, stream), -1);
     EXPECT_EQ(vadd(nullptr, nullptr, nullptr, -1, stream), -1);
 
+    float *h_a, *h_b, *h_c;
+    cudaMallocHost(&h_a, sizeof(float));
+    cudaMallocHost(&h_b, sizeof(float));
+    cudaMallocHost(&h_c, sizeof(float));
+
+    EXPECT_EQ(vadd(h_a, h_b, h_c, 1, stream), -1);
+
     cudaFree(d_c);
+    cudaFreeHost(h_a);
+    cudaFreeHost(h_b);
+    cudaFreeHost(h_c);
 }
